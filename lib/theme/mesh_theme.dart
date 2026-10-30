@@ -161,7 +161,7 @@ class MeshRadii {
 class MeshTheme {
   MeshTheme._();
 
-  static ThemeData dark() {
+  static ThemeData dark({Color? primaryColor, Color? secondaryColor}) {
     const scheme = ColorScheme.dark(
       primary: MeshPalette.blue,
       onPrimary: Colors.white,
@@ -195,10 +195,13 @@ class MeshTheme {
       onInverseSurface: MeshPalette.bg,
       inversePrimary: MeshPalette.blueDim,
     );
-    return _build(scheme, Brightness.dark);
+    return _build(
+      _withThemeColors(scheme, Brightness.dark, primaryColor, secondaryColor),
+      Brightness.dark,
+    );
   }
 
-  static ThemeData light() {
+  static ThemeData light({Color? primaryColor, Color? secondaryColor}) {
     const scheme = ColorScheme.light(
       primary: MeshPalette.lightBlue,
       onPrimary: Colors.white,
@@ -227,7 +230,53 @@ class MeshTheme {
       outline: MeshPalette.lightLine,
       outlineVariant: Color(0xFFD8DEE5),
     );
-    return _build(scheme, Brightness.light);
+    return _build(
+      _withThemeColors(scheme, Brightness.light, primaryColor, secondaryColor),
+      Brightness.light,
+    );
+  }
+
+  static ColorScheme _withThemeColors(
+    ColorScheme scheme,
+    Brightness brightness,
+    Color? primaryColor,
+    Color? secondaryColor,
+  ) {
+    final primary = primaryColor ?? scheme.primary;
+    final secondary = secondaryColor ?? scheme.secondary;
+    final tintStrength = brightness == Brightness.dark ? 0.44 : 0.16;
+    final primaryContainer = Color.alphaBlend(
+      primary.withValues(alpha: tintStrength),
+      scheme.surfaceContainerHigh,
+    );
+    final secondaryContainer = Color.alphaBlend(
+      secondary.withValues(alpha: tintStrength),
+      scheme.surfaceContainerHigh,
+    );
+    return scheme.copyWith(
+      primary: primary,
+      onPrimary:
+          ThemeData.estimateBrightnessForColor(primary) == Brightness.dark
+          ? Colors.white
+          : Colors.black,
+      primaryContainer: primaryContainer,
+      onPrimaryContainer:
+          ThemeData.estimateBrightnessForColor(primaryContainer) ==
+              Brightness.dark
+          ? Colors.white
+          : Colors.black,
+      secondary: secondary,
+      onSecondary:
+          ThemeData.estimateBrightnessForColor(secondary) == Brightness.dark
+          ? Colors.white
+          : Colors.black,
+      secondaryContainer: secondaryContainer,
+      onSecondaryContainer:
+          ThemeData.estimateBrightnessForColor(secondaryContainer) ==
+              Brightness.dark
+          ? Colors.white
+          : Colors.black,
+    );
   }
 
   static ThemeData _build(ColorScheme scheme, Brightness brightness) {
@@ -258,7 +307,11 @@ class MeshTheme {
         space: 1,
       ),
       appBarTheme: AppBarTheme(
-        backgroundColor: scheme.surface,
+        backgroundColor: Color.lerp(
+          scheme.surface,
+          scheme.primary,
+          brightness == Brightness.dark ? 0.12 : 0.08,
+        ),
         foregroundColor: scheme.onSurface,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
@@ -272,9 +325,13 @@ class MeshTheme {
           letterSpacing: -0.2,
           color: scheme.onSurface,
         ),
-        iconTheme: IconThemeData(color: scheme.onSurface),
+        iconTheme: IconThemeData(color: scheme.primary),
+        actionsIconTheme: IconThemeData(color: scheme.secondary),
         shape: Border(
-          bottom: BorderSide(color: scheme.outlineVariant, width: 1),
+          bottom: BorderSide(
+            color: scheme.primary.withValues(alpha: 0.35),
+            width: 1,
+          ),
         ),
       ),
       cardTheme: CardThemeData(
@@ -283,7 +340,10 @@ class MeshTheme {
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(MeshRadii.md),
-          side: BorderSide(color: scheme.outlineVariant, width: 1),
+          side: BorderSide(
+            color: Color.lerp(scheme.outlineVariant, scheme.primary, 0.22)!,
+            width: 1,
+          ),
         ),
         margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 0),
       ),
@@ -387,7 +447,7 @@ class MeshTheme {
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: scheme.surface,
         surfaceTintColor: Colors.transparent,
-        indicatorColor: scheme.primary,
+        indicatorColor: scheme.primaryContainer,
         indicatorShape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(MeshRadii.md),
         ),
@@ -399,13 +459,17 @@ class MeshTheme {
             fontSize: 11.5,
             fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
             letterSpacing: 0.1,
-            color: selected ? scheme.onPrimary : scheme.onSurfaceVariant,
+            color: selected
+                ? scheme.onPrimaryContainer
+                : scheme.onSurfaceVariant,
           );
         }),
         iconTheme: WidgetStateProperty.resolveWith((states) {
           final selected = states.contains(WidgetState.selected);
           return IconThemeData(
-            color: selected ? scheme.onPrimary : scheme.onSurfaceVariant,
+            color: selected
+                ? scheme.onPrimaryContainer
+                : scheme.onSurfaceVariant,
             size: 22,
           );
         }),

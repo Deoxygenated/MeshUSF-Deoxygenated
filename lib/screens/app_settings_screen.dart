@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -23,6 +24,11 @@ import '../helpers/snack_bar_builder.dart';
 import 'map_cache_screen.dart';
 
 class AppSettingsScreen extends StatelessWidget {
+  static const int _usfPrimaryColor = 0xFF006747;
+  static const int _usfSecondaryColor = 0xFFCFC493;
+  static const int _halloweenPrimaryColor = 0xFFFF7518;
+  static const int _halloweenSecondaryColor = 0xFF6A0DAD;
+
   /// Scrolls the image-message settings into view once, on first build.
   ///
   /// This is how the received-image placeholder's "no model installed" tap
@@ -69,6 +75,13 @@ class AppSettingsScreen extends StatelessWidget {
                             context,
                             settingsService,
                           ),
+                        ),
+
+                        // THEMES
+                        SectionHeader(context.l10n.appSettings_themes),
+                        MeshCard(
+                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                          child: _buildThemeContent(context, settingsService),
                         ),
 
                         // NOTIFICATIONS
@@ -244,6 +257,250 @@ class AppSettingsScreen extends StatelessWidget {
             ),
           ),
         ),
+      ],
+    );
+  }
+
+  Widget _buildThemeContent(
+    BuildContext context,
+    AppSettingsService settingsService,
+  ) {
+    final settings = settingsService.settings;
+    final colorScheme = Theme.of(context).colorScheme;
+    final primaryColor = settings.themePrimaryColorValue == null
+        ? colorScheme.primary
+        : Color(settings.themePrimaryColorValue!);
+    final secondaryColor = settings.themeSecondaryColorValue == null
+        ? colorScheme.secondary
+        : Color(settings.themeSecondaryColorValue!);
+    final selectedPreset = _selectedColorPreset(
+      settings.themePrimaryColorValue,
+      settings.themeSecondaryColorValue,
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Wrap(
+          spacing: 8,
+          runSpacing: 4,
+          children: [
+            _themePresetChip(
+              context,
+              label: context.l10n.appSettings_themeDefault,
+              selected: selectedPreset == 'default',
+              onSelected: () => settingsService.setThemeColors(
+                primaryColorValue: null,
+                secondaryColorValue: null,
+              ),
+            ),
+            _themePresetChip(
+              context,
+              label: context.l10n.appSettings_themeUSF,
+              selected: selectedPreset == 'usf',
+              onSelected: () => settingsService.setThemeColors(
+                primaryColorValue: _usfPrimaryColor,
+                secondaryColorValue: _usfSecondaryColor,
+              ),
+            ),
+            _themePresetChip(
+              context,
+              label: context.l10n.appSettings_themeHalloween,
+              selected: selectedPreset == 'halloween',
+              onSelected: () => settingsService.setThemeColors(
+                primaryColorValue: _halloweenPrimaryColor,
+                secondaryColorValue: _halloweenSecondaryColor,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        _themeColorPickerRow(
+          context,
+          label: context.l10n.appSettings_themePrimary,
+          color: primaryColor,
+          onTap: () async {
+            final picked = await _showRgbColorPicker(
+              context,
+              context.l10n.appSettings_themePrimary,
+              primaryColor,
+            );
+            if (picked != null) {
+              await settingsService.setThemeColors(
+                primaryColorValue: picked,
+                secondaryColorValue: settings.themeSecondaryColorValue,
+              );
+            }
+          },
+        ),
+        _themeColorPickerRow(
+          context,
+          label: context.l10n.appSettings_themeSecondary,
+          color: secondaryColor,
+          onTap: () async {
+            final picked = await _showRgbColorPicker(
+              context,
+              context.l10n.appSettings_themeSecondary,
+              secondaryColor,
+            );
+            if (picked != null) {
+              await settingsService.setThemeColors(
+                primaryColorValue: settings.themePrimaryColorValue,
+                secondaryColorValue: picked,
+              );
+            }
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _themePresetChip(
+    BuildContext context, {
+    required String label,
+    required bool selected,
+    required VoidCallback onSelected,
+  }) {
+    return ChoiceChip(
+      label: Text(label),
+      selected: selected,
+      onSelected: (_) => onSelected(),
+    );
+  }
+
+  Widget _themeColorPickerRow(
+    BuildContext context, {
+    required String label,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      title: Text(label),
+      subtitle: Text(
+        '#${color.toARGB32().toRadixString(16).substring(2).toUpperCase()}',
+      ),
+      trailing: Container(
+        width: 32,
+        height: 32,
+        decoration: BoxDecoration(
+          color: color,
+          shape: BoxShape.circle,
+          border: Border.all(color: Theme.of(context).colorScheme.outline),
+        ),
+      ),
+      onTap: onTap,
+    );
+  }
+
+  String _selectedColorPreset(int? primary, int? secondary) {
+    if (primary == null && secondary == null) return 'default';
+    if (primary == _usfPrimaryColor && secondary == _usfSecondaryColor) {
+      return 'usf';
+    }
+    if (primary == _halloweenPrimaryColor &&
+        secondary == _halloweenSecondaryColor) {
+      return 'halloween';
+    }
+    return '';
+  }
+
+  Future<int?> _showRgbColorPicker(
+    BuildContext context,
+    String colorName,
+    Color initialColor,
+  ) {
+    var red = (initialColor.r * 255).roundToDouble();
+    var green = (initialColor.g * 255).roundToDouble();
+    var blue = (initialColor.b * 255).roundToDouble();
+
+    return showDialog<int>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) {
+          final selectedColor = Color.fromARGB(
+            255,
+            red.round(),
+            green.round(),
+            blue.round(),
+          );
+          return AlertDialog(
+            title: Text(
+              '${context.l10n.appSettings_themePickColor} $colorName',
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 64,
+                  height: 64,
+                  decoration: BoxDecoration(
+                    color: selectedColor,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                _rgbSlider(
+                  context.l10n.appSettings_themeRed,
+                  red,
+                  const Color(0xFFE53935),
+                  (value) => setDialogState(() => red = value),
+                ),
+                _rgbSlider(
+                  context.l10n.appSettings_themeGreen,
+                  green,
+                  const Color(0xFF43A047),
+                  (value) => setDialogState(() => green = value),
+                ),
+                _rgbSlider(
+                  context.l10n.appSettings_themeBlue,
+                  blue,
+                  const Color(0xFF1E88E5),
+                  (value) => setDialogState(() => blue = value),
+                ),
+                Text(
+                  'RGB (${red.round()}, ${green.round()}, ${blue.round()})',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: Text(context.l10n.common_cancel),
+              ),
+              FilledButton(
+                onPressed: () =>
+                    Navigator.pop(dialogContext, selectedColor.toARGB32()),
+                child: Text(context.l10n.common_save),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _rgbSlider(
+    String label,
+    double value,
+    Color activeColor,
+    ValueChanged<double> onChanged,
+  ) {
+    return Row(
+      children: [
+        SizedBox(width: 20, child: Text(label)),
+        Expanded(
+          child: Slider(
+            value: value,
+            min: 0,
+            max: 255,
+            divisions: 255,
+            activeColor: activeColor,
+            onChanged: onChanged,
+          ),
+        ),
+        SizedBox(width: 28, child: Text(value.round().toString())),
       ],
     );
   }

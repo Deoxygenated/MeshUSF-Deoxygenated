@@ -1447,7 +1447,7 @@ abstract class AppLocalizations {
   /// No description provided for @appSettings_theme.
   ///
   /// In en, this message translates to:
-  /// **'Theme'**
+  /// **'Brightness'**
   String get appSettings_theme;
 
   /// No description provided for @appSettings_themeSystem.
@@ -1467,6 +1467,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Dark'**
   String get appSettings_themeDark;
+
+  /// No description provided for @appSettings_themes.
+  ///
+  /// In en, this message translates to:
+  /// **'Themes'**
+  String get appSettings_themes;
+
+  /// No description provided for @appSettings_themeDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get appSettings_themeDefault;
+
+  /// No description provided for @appSettings_themeUSF.
+  ///
+  /// In en, this message translates to:
+  /// **'USF'**
+  String get appSettings_themeUSF;
+
+  /// No description provided for @appSettings_themeHalloween.
+  ///
+  /// In en, this message translates to:
+  /// **'Halloween'**
+  String get appSettings_themeHalloween;
+
+  /// No description provided for @appSettings_themePrimary.
+  ///
+  /// In en, this message translates to:
+  /// **'Primary color'**
+  String get appSettings_themePrimary;
+
+  /// No description provided for @appSettings_themeSecondary.
+  ///
+  /// In en, this message translates to:
+  /// **'Secondary color'**
+  String get appSettings_themeSecondary;
+
+  /// No description provided for @appSettings_themePickColor.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose'**
+  String get appSettings_themePickColor;
+
+  /// No description provided for @appSettings_themeRed.
+  ///
+  /// In en, this message translates to:
+  /// **'R'**
+  String get appSettings_themeRed;
+
+  /// No description provided for @appSettings_themeGreen.
+  ///
+  /// In en, this message translates to:
+  /// **'G'**
+  String get appSettings_themeGreen;
+
+  /// No description provided for @appSettings_themeBlue.
+  ///
+  /// In en, this message translates to:
+  /// **'B'**
+  String get appSettings_themeBlue;
 
   /// No description provided for @appSettings_language.
   ///

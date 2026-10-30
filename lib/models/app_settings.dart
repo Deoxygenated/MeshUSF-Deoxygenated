@@ -113,6 +113,8 @@ class AppSettings {
   final int channelMinHops;
   final int channelMinHopsRetries;
   final String themeMode;
+  final int? themePrimaryColorValue;
+  final int? themeSecondaryColorValue;
   final String? languageOverride; // null = system default
   final bool appDebugLogEnabled;
   final Map<String, String> batteryChemistryByDeviceId;
@@ -220,6 +222,8 @@ class AppSettings {
     this.channelMinHops = 2,
     this.channelMinHopsRetries = 1,
     this.themeMode = 'system',
+    this.themePrimaryColorValue,
+    this.themeSecondaryColorValue,
     this.languageOverride,
     this.appDebugLogEnabled = false,
     Map<String, String>? batteryChemistryByDeviceId,
@@ -300,6 +304,8 @@ class AppSettings {
       'channel_min_hops': channelMinHops,
       'channel_min_hops_retries': channelMinHopsRetries,
       'theme_mode': themeMode,
+      'theme_primary_color': themePrimaryColorValue,
+      'theme_secondary_color': themeSecondaryColorValue,
       'language_override': languageOverride,
       'app_debug_log_enabled': appDebugLogEnabled,
       'battery_chemistry_by_device_id': batteryChemistryByDeviceId,
@@ -390,6 +396,8 @@ class AppSettings {
       channelMinHops: json['channel_min_hops'] as int? ?? 2,
       channelMinHopsRetries: json['channel_min_hops_retries'] as int? ?? 1,
       themeMode: json['theme_mode'] as String? ?? 'system',
+      themePrimaryColorValue: json['theme_primary_color'] as int?,
+      themeSecondaryColorValue: json['theme_secondary_color'] as int?,
       languageOverride: json['language_override'] as String?,
       appDebugLogEnabled: json['app_debug_log_enabled'] as bool? ?? false,
       batteryChemistryByDeviceId:
@@ -522,6 +530,8 @@ class AppSettings {
     int? channelMinHops,
     int? channelMinHopsRetries,
     String? themeMode,
+    Object? themePrimaryColorValue = _unset,
+    Object? themeSecondaryColorValue = _unset,
     Object? languageOverride = _unset,
     bool? appDebugLogEnabled,
     Map<String, String>? batteryChemistryByDeviceId,
@@ -598,6 +608,12 @@ class AppSettings {
       channelMinHopsRetries:
           channelMinHopsRetries ?? this.channelMinHopsRetries,
       themeMode: themeMode ?? this.themeMode,
+      themePrimaryColorValue: themePrimaryColorValue == _unset
+          ? this.themePrimaryColorValue
+          : themePrimaryColorValue as int?,
+      themeSecondaryColorValue: themeSecondaryColorValue == _unset
+          ? this.themeSecondaryColorValue
+          : themeSecondaryColorValue as int?,
       languageOverride: languageOverride == _unset
           ? this.languageOverride
           : languageOverride as String?,

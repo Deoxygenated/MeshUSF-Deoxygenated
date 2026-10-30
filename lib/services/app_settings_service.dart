@@ -1,5 +1,7 @@
 import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
+
 import '../models/app_settings.dart';
 import '../models/image_codec_support.dart';
 import '../models/translation_support.dart';
@@ -224,6 +226,18 @@ class AppSettingsService extends ChangeNotifier {
 
   Future<void> setThemeMode(String value) async {
     await updateSettings(_settings.copyWith(themeMode: value));
+  }
+
+  Future<void> setThemeColors({
+    required int? primaryColorValue,
+    required int? secondaryColorValue,
+  }) async {
+    await updateSettings(
+      _settings.copyWith(
+        themePrimaryColorValue: primaryColorValue,
+        themeSecondaryColorValue: secondaryColorValue,
+      ),
+    );
   }
 
   Future<void> setLanguageOverride(String? value) async {

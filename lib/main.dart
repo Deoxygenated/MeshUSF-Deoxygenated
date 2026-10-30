@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+
 import 'l10n/app_localizations.dart';
+
 import 'package:provider/provider.dart';
 
 import 'review_mode/review_mode_storage.dart';
@@ -432,8 +434,26 @@ class _MeshCoreAppState extends State<MeshCoreApp> with WidgetsBindingObserver {
             locale: _localeFromSetting(
               settingsService.settings.languageOverride,
             ),
-            theme: MeshTheme.light(),
-            darkTheme: MeshTheme.dark(),
+            theme: MeshTheme.light(
+              primaryColor:
+                  settingsService.settings.themePrimaryColorValue == null
+                  ? null
+                  : Color(settingsService.settings.themePrimaryColorValue!),
+              secondaryColor:
+                  settingsService.settings.themeSecondaryColorValue == null
+                  ? null
+                  : Color(settingsService.settings.themeSecondaryColorValue!),
+            ),
+            darkTheme: MeshTheme.dark(
+              primaryColor:
+                  settingsService.settings.themePrimaryColorValue == null
+                  ? null
+                  : Color(settingsService.settings.themePrimaryColorValue!),
+              secondaryColor:
+                  settingsService.settings.themeSecondaryColorValue == null
+                  ? null
+                  : Color(settingsService.settings.themeSecondaryColorValue!),
+            ),
             themeMode: _themeModeFromSetting(
               settingsService.settings.themeMode,
             ),

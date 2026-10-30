@@ -1413,21 +1413,20 @@ class _MessageBubble extends StatelessWidget {
       (connector) => connector.isContactUrlImagesEnabled(sourceId),
     );
 
-    // Bubble colors — outgoing uses MeshPalette.me / meBorder / meInk.
     final bubbleColor = isFailed
         ? scheme.errorContainer
         : isOutgoing
-        ? MeshPalette.me
+        ? scheme.primary
         : scheme.surfaceContainerLow;
     final bubbleBorder = isFailed
         ? scheme.error
         : isOutgoing
-        ? MeshPalette.meBorder
-        : scheme.outlineVariant;
+        ? scheme.primary
+        : scheme.primary.withValues(alpha: 0.5);
     final textColor = isFailed
         ? scheme.onErrorContainer
         : isOutgoing
-        ? MeshPalette.meInk
+        ? scheme.onPrimary
         : scheme.onSurface;
     final metaColor = textColor.withValues(alpha: 0.65);
     const bodyFontSize = 14.0;
@@ -1539,7 +1538,7 @@ class _MessageBubble extends StatelessWidget {
                                 style: MeshTheme.mono(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w700,
-                                  color: _colorForName(senderName),
+                                  color: _colorForName(senderName, scheme),
                                 ),
                               ),
                             ),
@@ -1897,10 +1896,8 @@ class _MessageBubble extends StatelessWidget {
 }
 
 /// Deterministic name-to-hue mapping consistent with [AvatarCircle].
-Color _colorForName(String name) {
+Color _colorForName(String name, ColorScheme scheme) {
   const hues = [
-    MeshPalette.blue,
-    MeshPalette.magenta,
     MeshPalette.signal,
     MeshPalette.warn,
     Color(0xFF8FA8F0),
@@ -1910,5 +1907,8 @@ Color _colorForName(String name) {
   for (final c in name.codeUnits) {
     h = (h * 31 + c) & 0x7fffffff;
   }
-  return hues[h % hues.length];
+  final index = h % (hues.length + 2);
+  if (index == 0) return scheme.primary;
+  if (index == 1) return scheme.secondary;
+  return hues[index - 2];
 }

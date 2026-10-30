@@ -31,10 +31,28 @@ class SectionHeader extends StatelessWidget {
       padding: padding,
       child: Row(
         children: [
+          Container(
+            width: 4,
+            height: 13,
+            decoration: BoxDecoration(
+              color: scheme.primary,
+              borderRadius: BorderRadius.circular(MeshRadii.pill),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Container(
+            width: 4,
+            height: 7,
+            decoration: BoxDecoration(
+              color: scheme.secondary,
+              borderRadius: BorderRadius.circular(MeshRadii.pill),
+            ),
+          ),
+          const SizedBox(width: 8),
           Expanded(
             child: Text(
               label.toUpperCase(),
-              style: MeshTheme.accentLabel(color: scheme.onSurfaceVariant),
+              style: MeshTheme.accentLabel(color: scheme.primary),
               overflow: TextOverflow.ellipsis,
             ),
           ),
@@ -76,7 +94,11 @@ class MeshCard extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final shape = RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(radius),
-      side: BorderSide(color: borderColor ?? scheme.outlineVariant),
+      side: BorderSide(
+        color:
+            borderColor ??
+            Color.lerp(scheme.outlineVariant, scheme.primary, 0.22)!,
+      ),
     );
     return Padding(
       padding: margin,
@@ -249,25 +271,27 @@ class AvatarCircle extends StatelessWidget {
   });
 
   static const _hues = [
-    MeshPalette.blue,
-    MeshPalette.magenta,
     MeshPalette.signal,
     MeshPalette.warn,
     Color(0xFF8FA8F0),
     Color(0xFF6FD9CE),
   ];
 
-  Color _colorFor(String s) {
+  Color _colorFor(String s, ColorScheme scheme) {
     var h = 0;
     for (final c in s.codeUnits) {
       h = (h * 31 + c) & 0x7fffffff;
     }
-    return _hues[h % _hues.length];
+    final index = h % (_hues.length + 2);
+    if (index == 0) return scheme.primary;
+    if (index == 1) return scheme.secondary;
+    return _hues[index - 2];
   }
 
   @override
   Widget build(BuildContext context) {
-    final accent = color ?? _colorFor(name);
+    final scheme = Theme.of(context).colorScheme;
+    final accent = color ?? _colorFor(name, scheme);
     final initials = _initials(name);
     return Container(
       width: size,

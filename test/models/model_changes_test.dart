@@ -284,39 +284,36 @@ void main() {
       expect(contact!.name, equals('Alice'));
     });
 
-    test(
-      'name with mix of printable and replacement chars → returns Contact (not all bad)',
-      () {
-        // Build a name with mostly printable chars and one replacement char (0xFFFD in codeUnits).
-        // utf8 allowMalformed: true maps invalid sequences to U+FFFD.
-        // We embed one invalid UTF-8 byte (0x80) among valid ASCII bytes.
-        // The decoded string will be "Hi\uFFFDThere" — not ALL bad, so should be accepted.
-        final nameBytes = Uint8List(32);
-        nameBytes[0] = 0x48; // 'H'
-        nameBytes[1] = 0x69; // 'i'
-        nameBytes[2] = 0x80; // invalid UTF-8 → decoded as U+FFFD
-        nameBytes[3] = 0x54; // 'T'
-        nameBytes[4] = 0x68; // 'h'
-        nameBytes[5] = 0x65; // 'e'
-        nameBytes[6] = 0x72; // 'r'
-        nameBytes[7] = 0x65; // 'e'
-        // rest are 0x00 (null terminator)
-        final writer = BytesBuilder();
-        writer.addByte(respCodeContact);
-        writer.add(Uint8List.fromList(List.generate(32, (i) => i + 1)));
-        writer.addByte(1); // type
-        writer.addByte(0); // flags
-        writer.addByte(0); // pathLen
-        writer.add(Uint8List(64)); // path
-        writer.add(nameBytes);
-        writer.add(Uint8List.fromList([0x01, 0x00, 0x00, 0x00])); // timestamp
-        writer.add(Uint8List(4)); // lat
-        writer.add(Uint8List(4)); // lon
-        final frame = Uint8List.fromList(writer.toBytes());
-        final contact = Contact.fromFrame(frame);
-        expect(contact, isNotNull);
-      },
-    );
+    test('name with mix of printable and replacement chars → returns Contact (not all bad)', () {
+      // Build a name with mostly printable chars and one replacement char (0xFFFD in codeUnits).
+      // utf8 allowMalformed: true maps invalid sequences to U+FFFD.
+      // We embed one invalid UTF-8 byte (0x80) among valid ASCII bytes.
+      // The decoded string will be "Hi\uFFFDThere" — not ALL bad, so should be accepted.
+      final nameBytes = Uint8List(32);
+      nameBytes[0] = 0x48; // 'H'
+      nameBytes[1] = 0x69; // 'i'
+      nameBytes[2] = 0x80; // invalid UTF-8 → decoded as U+FFFD
+      nameBytes[3] = 0x54; // 'T'
+      nameBytes[4] = 0x68; // 'h'
+      nameBytes[5] = 0x65; // 'e'
+      nameBytes[6] = 0x72; // 'r'
+      nameBytes[7] = 0x65; // 'e'
+      // rest are 0x00 (null terminator)
+      final writer = BytesBuilder();
+      writer.addByte(respCodeContact);
+      writer.add(Uint8List.fromList(List.generate(32, (i) => i + 1)));
+      writer.addByte(1); // type
+      writer.addByte(0); // flags
+      writer.addByte(0); // pathLen
+      writer.add(Uint8List(64)); // path
+      writer.add(nameBytes);
+      writer.add(Uint8List.fromList([0x01, 0x00, 0x00, 0x00])); // timestamp
+      writer.add(Uint8List(4)); // lat
+      writer.add(Uint8List(4)); // lon
+      final frame = Uint8List.fromList(writer.toBytes());
+      final contact = Contact.fromFrame(frame);
+      expect(contact, isNotNull);
+    });
   });
 
   group('PathRecord — routeWeight field', () {
@@ -400,6 +397,8 @@ void main() {
   group('AppSettings — new fields', () {
     test('default values are correct', () {
       final settings = AppSettings();
+      expect(settings.themePrimaryColorValue, isNull);
+      expect(settings.themeSecondaryColorValue, isNull);
       expect(settings.maxRouteWeight, equals(5.0));
       expect(settings.initialRouteWeight, equals(3.0));
       expect(settings.routeWeightSuccessIncrement, equals(0.5));
@@ -423,6 +422,8 @@ void main() {
       expect(json['route_weight_failure_decrement'], equals(0.2));
       expect(json['max_message_retries'], equals(5));
       expect(json['evict_discovered_contacts_enabled'], isTrue);
+      expect(json['theme_primary_color'], isNull);
+      expect(json['theme_secondary_color'], isNull);
     });
 
     test('fromJson reads all new fields', () {
@@ -464,6 +465,25 @@ void main() {
       // Other fields should be unchanged
       expect(updated.initialRouteWeight, equals(settings.initialRouteWeight));
       expect(updated.maxMessageRetries, equals(settings.maxMessageRetries));
+    });
+
+    test('theme color values round-trip and can be reset', () {
+      const primary = 0xFF006747;
+      const secondary = 0xFFCFC493;
+      final settings = AppSettings(
+        themePrimaryColorValue: primary,
+        themeSecondaryColorValue: secondary,
+      );
+      final restored = AppSettings.fromJson(settings.toJson());
+      expect(restored.themePrimaryColorValue, equals(primary));
+      expect(restored.themeSecondaryColorValue, equals(secondary));
+
+      final reset = restored.copyWith(
+        themePrimaryColorValue: null,
+        themeSecondaryColorValue: null,
+      );
+      expect(reset.themePrimaryColorValue, isNull);
+      expect(reset.themeSecondaryColorValue, isNull);
     });
 
     test('copyWith works for initialRouteWeight', () {

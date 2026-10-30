@@ -628,14 +628,11 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
       message.pathLength,
     );
 
-    // Bubble colors — outgoing uses MeshPalette.me / meBorder / meInk.
     final bubbleColor = isOutgoing
-        ? MeshPalette.me
+        ? scheme.primary
         : scheme.surfaceContainerLow;
-    final bubbleBorder = isOutgoing
-        ? MeshPalette.meBorder
-        : scheme.outlineVariant;
-    final textColor = isOutgoing ? MeshPalette.meInk : scheme.onSurface;
+    final bubbleBorder = isOutgoing ? scheme.primary : scheme.outlineVariant;
+    final textColor = isOutgoing ? scheme.onPrimary : scheme.onSurface;
     final metaColor = textColor.withValues(alpha: 0.65);
     const bodyFontSize = 14.0;
 
@@ -1240,7 +1237,7 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
     Widget? trailing,
   }) {
     final scheme = Theme.of(context).colorScheme;
-    final textColor = isOutgoing ? MeshPalette.meInk : scheme.onSurface;
+    final textColor = isOutgoing ? scheme.onPrimary : scheme.onSurface;
     final metaColor = textColor.withValues(alpha: 0.7);
 
     return Row(
@@ -1652,7 +1649,7 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
   Widget _buildImageBubble(ReceivedImageEntry entry, double textScale) {
     final scheme = Theme.of(context).colorScheme;
     final isOutgoing = entry.isOutgoing;
-    final textColor = isOutgoing ? MeshPalette.meInk : scheme.onSurface;
+    final textColor = isOutgoing ? scheme.onPrimary : scheme.onSurface;
     final metaColor = textColor.withValues(alpha: 0.65);
 
     final bubble = Padding(
@@ -1671,12 +1668,10 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
             child: Container(
               padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
-                color: isOutgoing ? MeshPalette.me : scheme.surfaceContainerLow,
+                color: isOutgoing ? scheme.primary : scheme.surfaceContainerLow,
                 borderRadius: BorderRadius.circular(MeshRadii.lg),
                 border: Border.all(
-                  color: isOutgoing
-                      ? MeshPalette.meBorder
-                      : scheme.outlineVariant,
+                  color: isOutgoing ? scheme.primary : scheme.outlineVariant,
                   width: 1,
                 ),
               ),

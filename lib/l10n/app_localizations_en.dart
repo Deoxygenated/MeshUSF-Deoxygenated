@@ -761,7 +761,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appSettings_appearance => 'Appearance';
 
   @override
-  String get appSettings_theme => 'Theme';
+  String get appSettings_theme => 'Brightness';
 
   @override
   String get appSettings_themeSystem => 'System default';
@@ -771,6 +771,36 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get appSettings_themeDark => 'Dark';
+
+  @override
+  String get appSettings_themes => 'Themes';
+
+  @override
+  String get appSettings_themeDefault => 'Default';
+
+  @override
+  String get appSettings_themeUSF => 'USF';
+
+  @override
+  String get appSettings_themeHalloween => 'Halloween';
+
+  @override
+  String get appSettings_themePrimary => 'Primary color';
+
+  @override
+  String get appSettings_themeSecondary => 'Secondary color';
+
+  @override
+  String get appSettings_themePickColor => 'Choose';
+
+  @override
+  String get appSettings_themeRed => 'R';
+
+  @override
+  String get appSettings_themeGreen => 'G';
+
+  @override
+  String get appSettings_themeBlue => 'B';
 
   @override
   String get appSettings_language => 'Language';

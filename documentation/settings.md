@@ -104,7 +104,8 @@ Settings take effect when saved. A snackbar confirms the update.
 A dedicated sub-screen for app-level preferences (nothing here is sent to the device). All settings persist locally via SharedPreferences.
 
 ### Appearance
-- **Theme**: System / Light / Dark
+- **Brightness**: System / Light / Dark
+- **Themes**: Choose primary and secondary colors with RGB sliders, or use the Default, USF (green and gold), and Halloween (orange and purple) color schemes
 - **Language**: System default or one of 18 languages (English, French, Spanish, German, Polish, Slovenian, Portuguese, Italian, Chinese, Swedish, Dutch, Slovak, Bulgarian, Russian, Ukrainian, Hungarian, Japanese, Korean)
 
 ### Notifications
